@@ -2,17 +2,20 @@ import moviesModel from "../../models/movies.model.js";
 
 export const deleteMovie = async (req, res) => {
   try {
-    if (!req.user.isadmin) {
+
+    const {isadmin} =req.user
+    if (!isadmin) {
       return res.status(404).json({ message: "unauthorized delete not possible" });
     }
 
-    const { movieId } = req.query;
+    const { movieId } = req.params;
 
-    console.log(movieId);
     
     const movie = await moviesModel.deleteOne({ _id: movieId });
     res.json({ success: true, movie });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success:false,message: error.message });
   }
 };

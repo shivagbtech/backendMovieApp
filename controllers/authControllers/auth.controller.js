@@ -21,15 +21,17 @@ export const getLogin = async (req, res) => {
       if (!result) {
         return res.status(404).json({ message: "password does not match" });
       }
+      const token = sign(
+        { _id: user._id, isadmin: user.isadmin },
+        process.env.jwtkey
+      );
+      res.json({ token: token, isadmin: user.isadmin });
     });
   }
 
-  const token = sign(
-    { _id: user._id, isadmin: user.isadmin },
-    process.env.jwtkey
-  );
-  res.json({ token: token, isadmin: user.isadmin });
+  
 };
+
 
 export const createUser = async (req, res) => {
   const { name, email, password, isadmin } = req.body;

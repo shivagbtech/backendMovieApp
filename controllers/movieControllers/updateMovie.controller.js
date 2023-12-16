@@ -5,32 +5,33 @@ export const updateMovie = async (req, res) => {
     const { movieId } = req.params;
     const { title, description, rating, thumbnail, trailer, category } =
       req.body;
-
-    if (!req.user.isadmin) {
+    const { isadmin } = req.user;
+    if (!isadmin) {
       return res
         .status(404)
         .json({ message: "unauthorized update not possible" });
     }
 
-    console.log("movie_id", movieId);
-    console.log("request body", req.body);
-
-    const movie = await moviesModel.findByIdAndUpdate(
+    const updateMovieQueryPayload = {
+      title,
+      description,
+      rating,
+      thumbnail,
+      trailer,
+      category,
+    };
+console.log(updateMovieQueryPayload);
+    const updatedMovieQuery = await moviesModel.findByIdAndUpdate(
       { _id: movieId },
-      {
-        title,
-        description,
-        rating,
-        thumbnail,
-        trailer,
-        category,
-      }
+      updateMovieQueryPayload
     );
-    const updatedMovieInstance = await moviesModel.findById(movieId);
-    return res.json({ success: true, updatedMovie: updatedMovieInstance });
-  } catch (err) {
-    console.log(err);
 
-    res.status(500).json({ message: "something went wrong" });
+    const updatedMovieInstance = await moviesModel.findById(movieId);
+
+    return res.json({ success: true, updatedMovie: updatedMovieInstance });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
