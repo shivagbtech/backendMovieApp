@@ -86,3 +86,15 @@ export const createUser = async (req, res) => {
     result: user,
   });
 };
+
+export const getAllUser=async (req,res,next)=>{
+
+  let allUser;
+  if(req.user.isadmin){
+    allUser=await userModel.find();
+
+    res.json({message:'successful',allUser:allUser})
+  }else{
+    res.state(404).json({message:'you are not authorized to get all user'})
+  }
+}
